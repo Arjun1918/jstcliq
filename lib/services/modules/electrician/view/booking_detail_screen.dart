@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kods/common/provider/date_picker_provider.dart';
 import 'package:kods/common/provider/time_picker_provider.dart';
+import 'package:kods/common/widgets/date_month_utils.dart';
 import 'package:kods/menu_drawer/booking/provider/booking_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:kods/common/widgets/date_picker.dart';
@@ -30,46 +31,53 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         context,
         listen: false,
       );
-      
-      // Set booking provider reference
+
       final bookingProvider = Provider.of<BookingProvider>(
         context,
         listen: false,
       );
       electricalProvider.setBookingProvider(bookingProvider);
-      
+
       // Clear booking state
       electricalProvider.clearBookingState();
     });
   }
 
- void _confirmBooking() async {
-  final electricalProvider = Provider.of<ElectricalProvider>(context, listen: false);
-  final bookingProvider = Provider.of<BookingProvider>(context, listen: false);
-
-  try {
-    await electricalProvider.confirmBooking(
-      service: widget.service, 
-      shop: widget.shop
+  void _confirmBooking() async {
+    final electricalProvider = Provider.of<ElectricalProvider>(
+      context,
+      listen: false,
+    );
+    final bookingProvider = Provider.of<BookingProvider>(
+      context,
+      listen: false,
     );
 
-    if (!mounted) return;
+    try {
+      await electricalProvider.confirmBooking(
+        service: widget.service,
+        shop: widget.shop,
+      );
 
-    // Refresh the bookings list to show the new booking
-    await bookingProvider.loadBookings();
+      if (!mounted) return;
 
-    _showBookingConfirmationDialog();
-  } catch (e) {
-    if (!mounted) return;
+      // Refresh the bookings list to show the new booking
+      await bookingProvider.loadBookings();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Booking failed: ${electricalProvider.error ?? e.toString()}'),
-        backgroundColor: Colors.red,
-      ),
-    );
+      _showBookingConfirmationDialog();
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Booking failed: ${electricalProvider.error ?? e.toString()}',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-}
 
   void _showBookingConfirmationDialog() {
     final provider = Provider.of<ElectricalProvider>(context, listen: false);
@@ -113,12 +121,12 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
             ),
             SizedBox(height: 4.h),
             Text(
-              'Date: ${provider.selectedDate != null ? _formatDate(provider.selectedDate!) : 'Not selected'}',
+              'Date: ${provider.selectedDate != null ? formatDate(provider.selectedDate!) : 'Not selected'}',
               style: TextStyle(fontSize: 14.sp),
             ),
             SizedBox(height: 4.h),
             Text(
-'Time: ${provider.selectedTime != null ? provider.selectedTime!.format(context) : 'Not selected'}',
+              'Time: ${provider.selectedTime != null ? provider.selectedTime!.format(context) : 'Not selected'}',
               style: TextStyle(fontSize: 14.sp),
             ),
             SizedBox(height: 4.h),
@@ -142,11 +150,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: Colors.blue,
-                    size: 20.w,
-                  ),
+                  Icon(Icons.info_outline, color: Colors.blue, size: 20.w),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
@@ -202,10 +206,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                   ),
                   child: Text(
                     'Done',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: 14.sp, color: Colors.white),
                   ),
                 ),
               ),
@@ -214,24 +215,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         ],
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${date.day} ${months[date.month - 1]}, ${date.year}';
   }
 
   @override
@@ -364,10 +347,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                   SizedBox(height: 4.h),
                   Text(
                     widget.service.description,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
                   ),
                 ],
               ],
@@ -410,11 +390,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(8.r),
                   ),
-                  child: Icon(
-                    Icons.store,
-                    color: Colors.grey[400],
-                    size: 24.w,
-                  ),
+                  child: Icon(Icons.store, color: Colors.grey[400], size: 24.w),
                 );
               },
             ),

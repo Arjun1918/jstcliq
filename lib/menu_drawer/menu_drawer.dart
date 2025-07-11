@@ -41,19 +41,19 @@ class MenuDrawer extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   // Add navigation to profile page
-                  // context.push('/profile');
+                  context.push('/profile');
                   FocusScope.of(context).unfocus();
                 },
               ),
 
               _buildMenuItem(
                 context: context,
-                icon: Icons.local_offer_outlined,
-                title: 'Subscription',
+                icon: Icons.shopping_bag_outlined,
+                title: 'My products',
                 onTap: () {
                   Navigator.pop(context);
                   // Add navigation to subscription page
-                  // context.push('/subscription');
+                  context.push('/myproducts');
                   FocusScope.of(context).unfocus();
                 },
               ),
@@ -68,6 +68,16 @@ class MenuDrawer extends StatelessWidget {
                   FocusScope.of(context).unfocus();
                 },
               ),
+              _buildMenuItem(
+                context: context,
+                icon: Icons.miscellaneous_services_outlined,
+                title: 'My Services',
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push('/myservices');
+                  FocusScope.of(context).unfocus();
+                },  
+              ),
 
               _buildMenuItem(
                 context: context,
@@ -75,7 +85,7 @@ class MenuDrawer extends StatelessWidget {
                 title: 'Shopping Cart',
                 onTap: () {
                   Navigator.pop(context);
-                  // context.push('/shopping-cart');
+                  context.push('/cart');
                   FocusScope.of(context).unfocus();
                 },
               ),
@@ -83,7 +93,7 @@ class MenuDrawer extends StatelessWidget {
               _buildMenuItem(
                 context: context,
                 icon: Icons.history,
-                title: 'Order History',
+                title: 'Order Status',
                 onTap: () {
                   Navigator.pop(context);
                   // context.push('/order-history');

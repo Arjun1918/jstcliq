@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kods/app/routes/routes_name.dart';
 import 'package:kods/menu_drawer/booking/view/my_booking.dart';
+import 'package:kods/menu_drawer/my_products/view/my_products_screen.dart';
+import 'package:kods/menu_drawer/my_services/view/my_services_screen.dart';
+import 'package:kods/menu_drawer/profile/view/profile_screen.dart';
 import 'package:kods/products/fruits/view/cart_screen.dart';
 import 'package:kods/products/fruits/view/fruit_detail_page.dart';
 import 'package:kods/products/fruits/view/fruit_page.dart';
@@ -11,11 +14,11 @@ import 'package:kods/products/categories/categroies_products.dart';
 import 'package:kods/services/modules/electrician/model/electrician_model.dart';
 import 'package:kods/services/modules/electrician/view/booking_detail_screen.dart';
 import 'package:kods/dashboard/view/dashboard_screen.dart';
+import 'package:kods/services/modules/electrician/view/electrician_list_screen.dart';
 import 'package:kods/services/modules/electrician/view/electrician_services_screen.dart';
 import 'package:kods/login/view/login_screen.dart';
 import 'package:kods/login/view/register_screen.dart';
 import 'package:kods/utils/splash_screen.dart';
-
 class AppRoutes {
   static final GoRouter router = GoRouter(
     initialLocation: RouteNames.splash,
@@ -34,6 +37,27 @@ class AppRoutes {
           return const MyBookingsScreen();
         },
       ),
+      GoRoute(
+        path: RouteNames.profile,
+        name: RouteNames.profile,
+        builder: (BuildContext context, GoRouterState state) {
+          return const ProfilePage();
+        },
+      ),
+      GoRoute(
+        path: RouteNames.myservices,
+        name: RouteNames.myservices,
+        builder: (BuildContext context, GoRouterState state) {
+          return const ServicesPage();
+        },
+      ),
+      GoRoute(
+        path: RouteNames.myproducts,
+        name: RouteNames.myproducts,
+        builder: (BuildContext context, GoRouterState state) {
+          return const ProductPage();
+        },
+      ),
 
       GoRoute(
         path: RouteNames.login,
@@ -50,14 +74,19 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        path: RouteNames.electriclist,
+        name: RouteNames.electriclist,
+        builder: (BuildContext context, GoRouterState state) {
+          return const ElectricalListScreen();
+        },
+      ),
+      GoRoute(
         path: RouteNames.fruitspage,
         name: RouteNames.fruitspage,
         builder: (BuildContext context, GoRouterState state) {
           return const FruitsScreen();
         },
       ),
-
-      // Add this new route for fruit details
       GoRoute(
         path: '${RouteNames.fruitDetails}/:fruitId',
         name: RouteNames.fruitDetails,

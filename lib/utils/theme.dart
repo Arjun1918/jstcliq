@@ -13,7 +13,7 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     colorScheme: const ColorScheme.light(
-      primary: primaryColor,
+      primary: Color.fromRGBO(154, 166, 178, 1),
       secondary: secondaryColor,
       surface: surfaceColor,
       background: backgroundColor,

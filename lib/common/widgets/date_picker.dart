@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kods/common/provider/date_picker_provider.dart';
+import 'package:kods/common/widgets/date_month_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -16,7 +17,10 @@ class CustomDatePicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Select Date', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+        Text(
+          'Select Date',
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+        ),
         SizedBox(height: 12.h),
         Container(
           decoration: BoxDecoration(
@@ -47,19 +51,11 @@ class CustomDatePicker extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(top: 10.h),
             child: Text(
-              'Selected: ${_formatDate(dateProvider.selectedDate!)}',
+              'Selected: ${formatDate(dateProvider.selectedDate!)}',
               style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700),
             ),
           ),
       ],
     );
-  }
-
-  String _formatDate(DateTime date) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return '${date.day} ${months[date.month - 1]}, ${date.year}';
   }
 }

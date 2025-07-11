@@ -2,9 +2,12 @@ class RouteNames {
   static const String splash = '/';
   static const String login = '/login';
   static const String dashboard = '/dashboard';
+  static const String profile = '/profile';
   static const String home = '/home';
   static const String bookingpage = '/bookingpage';
   static const String register = '/register';
+  static const String myservices = '/myservices';
+  static const String myproducts = '/myproducts';
   static const String forgotPassword = '/forgot-password';
   static const String signUp = '/sign-up';
   static const String bookservice = '/bookservice';
