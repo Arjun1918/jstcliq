@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/my_services/model/service_model.dart';
 import 'package:kods/menu_drawer/my_services/provider/service_provider.dart';
 import 'package:provider/provider.dart';
@@ -247,15 +248,7 @@ class ServiceCard extends StatelessWidget {
                   listen: false,
                 ).removeService(service.id);
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Service deleted successfully',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                context.showErrorSnackbar('Service deleted successfully');
               },
               child: Text(
                 'Delete',

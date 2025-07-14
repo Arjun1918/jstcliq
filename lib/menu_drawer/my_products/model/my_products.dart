@@ -34,7 +34,6 @@ class ProductModel {
     );
   }
 
-  // Create a copy with updated fields
   ProductModel copyWith({
     String? id,
     String? name,

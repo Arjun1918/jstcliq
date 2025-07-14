@@ -9,9 +9,13 @@ class ProductProvider extends ChangeNotifier {
     'Chocolates',
     'Dairy Products',
   ];
+  
+  // Add selected image path management
+  String? _selectedImagePath;
 
   List<ProductModel> get products => _products;
   List<String> get categories => _categories;
+  String? get selectedImagePath => _selectedImagePath;
 
   void addProduct(String name, String category, String imagePath, double cost) {
     final product = ProductModel(
@@ -28,6 +32,18 @@ class ProductProvider extends ChangeNotifier {
 
   void removeproduct(String id) {
     _products.removeWhere((product) => product.id == id);
+    notifyListeners();
+  }
+
+  // Add method to set selected image path
+  void setSelectedImagePath(String? path) {
+    _selectedImagePath = path;
+    notifyListeners();
+  }
+
+  // Add method to clear selected image path
+  void clearSelectedImagePath() {
+    _selectedImagePath = null;
     notifyListeners();
   }
 }

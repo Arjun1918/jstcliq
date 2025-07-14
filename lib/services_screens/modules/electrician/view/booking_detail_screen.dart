@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kods/common/provider/date_picker_provider.dart';
 import 'package:kods/common/provider/time_picker_provider.dart';
 import 'package:kods/common/widgets/date_month_utils.dart';
+import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/booking/provider/booking_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:kods/common/widgets/date_picker.dart';
@@ -61,21 +62,13 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
       if (!mounted) return;
 
-      // Refresh the bookings list to show the new booking
       await bookingProvider.loadBookings();
 
       _showBookingConfirmationDialog();
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Booking failed: ${electricalProvider.error ?? e.toString()}',
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
+      context.showErrorSnackbar('Booking failed: ${e.toString()}');
     }
   }
 

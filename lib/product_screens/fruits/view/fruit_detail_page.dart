@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/product_screens/fruits/provider/cart_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:kods/utils/theme.dart';
@@ -250,7 +251,7 @@ class FruitDetailsScreen extends StatelessWidget {
             ),
 
             SizedBox(height: 16.h),
-            
+
             // Show View Cart button only if cart has items
             Consumer<CartProvider>(
               builder: (context, cartProvider, child) {
@@ -302,29 +303,12 @@ class _QuantitySelector extends StatelessWidget {
 
   void _showAddedToCartMessage(BuildContext context, String displayName) {
     ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$displayName added to cart'),
-        duration: const Duration(seconds: 2),
-        backgroundColor: Colors.green,
-        action: SnackBarAction(
-          label: 'View Cart',
-          textColor: Colors.white,
-          onPressed: () => context.push('/cart'),
-        ),
-      ),
-    );
+          context.showSuccessSnackbar('$displayName added to cart');
   }
 
   void _showRemovedFromCartMessage(BuildContext context, String displayName) {
     ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$displayName removed from cart'),
-        duration: const Duration(seconds: 1),
-        backgroundColor: Colors.orange,
-      ),
-    );
+    context.showErrorSnackbar('$displayName removed from cart');
   }
 
   @override
@@ -390,7 +374,10 @@ class _QuantitySelector extends StatelessWidget {
                   if (currentQuantity == 1) {
                     // Remove item completely if quantity becomes 0
                     cartProvider.removeItem(fruitName);
-                    _showRemovedFromCartMessage(context, currentFruit['displayName']);
+                    _showRemovedFromCartMessage(
+                      context,
+                      currentFruit['displayName'],
+                    );
                   } else {
                     // Just decrease quantity
                     cartProvider.updateQuantity(fruitName, currentQuantity - 1);
@@ -409,7 +396,7 @@ class _QuantitySelector extends StatelessWidget {
                   padding: EdgeInsets.all(8.w),
                 ),
               ),
-              
+
               // Quantity display with item name
               Expanded(
                 child: Container(
@@ -437,7 +424,7 @@ class _QuantitySelector extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Increase button
               IconButton(
                 onPressed: () {

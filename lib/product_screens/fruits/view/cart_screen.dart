@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/product_screens/fruits/provider/cart_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:kods/utils/theme.dart';
@@ -37,10 +38,7 @@ class CartScreen extends StatelessWidget {
             builder: (context, cartProvider, child) {
               if (cartProvider.items.isNotEmpty) {
                 return IconButton(
-                  icon: Icon(
-                    Icons.delete_outline,
-                    color: Colors.red[600],
-                  ),
+                  icon: Icon(Icons.delete_outline, color: Colors.red[600]),
                   onPressed: () {
                     _showClearCartDialog(context);
                   },
@@ -76,57 +74,83 @@ class CartScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildEmptyCart(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.shopping_cart_outlined,
-            size: 80.sp,
-            color: Colors.grey[400],
+Widget _buildEmptyBottomBar(BuildContext context) {
+  return Container(
+    padding: EdgeInsets.all(16.w),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.2),
+          spreadRadius: 1,
+          blurRadius: 4,
+          offset: const Offset(0, -2),
+        ),
+      ],
+    ),
+    child: SafeArea(
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () => context.push('/dashboard'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.primaryColor,
+            padding: EdgeInsets.symmetric(vertical: 14.h),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.r),
+            ),
           ),
-          SizedBox(height: 16.h),
-          Text(
-            'Your cart is empty',
+          child: Text(
+            'Start Shopping',
             style: TextStyle(
-              fontSize: 18.sp,
+              fontSize: 16.sp,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
+              color: Colors.white,
             ),
           ),
-          SizedBox(height: 8.h),
-          Text(
-            'Add some delicious fruits to get started!',
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey[500],
-            ),
-          ),
-          SizedBox(height: 24.h),
-          ElevatedButton(
-            onPressed: () => context.push('/dashboard'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
-              padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-            ),
-            child: Text(
-              'Start Shopping',
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+Widget _buildEmptyCart(BuildContext context) {
+  Theme.of(context);
+
+  return Column(
+    children: [
+      Expanded(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.shopping_cart_outlined,
+                size: 80.sp,
+                color: Colors.grey[400],
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                'Your cart is empty',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'Add some delicious fruits to get started!',
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey[500]),
+              ),
+            ],
+          ),
+        ),
+      ),
+      _buildEmptyBottomBar(context),
+    ],
+  );
+}
 
   Widget _buildCartItem(BuildContext context, CartItem item) {
     final theme = Theme.of(context);
@@ -174,10 +198,7 @@ class CartScreen extends StatelessWidget {
                 SizedBox(height: 4.h),
                 Text(
                   item.weight,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
                 ),
                 SizedBox(height: 8.h),
                 Row(
@@ -307,10 +328,7 @@ class CartScreen extends StatelessWidget {
             children: [
               Text(
                 'Total (${cartProvider.totalItems} items)',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
               ),
               Text(
                 '₹ ${cartProvider.totalAmount.toStringAsFixed(0)}',
@@ -367,26 +385,15 @@ class CartScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
             ),
             TextButton(
               onPressed: () {
                 context.read<CartProvider>().clearCart();
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cart cleared successfully'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
+                context.showSuccessSnackbar('Cart cleared successfully');
               },
-              child: Text(
-                'Clear',
-                style: TextStyle(color: Colors.red[600]),
-              ),
+              child: Text('Clear', style: TextStyle(color: Colors.red[600])),
             ),
           ],
         );
@@ -396,7 +403,7 @@ class CartScreen extends StatelessWidget {
 
   void _showCheckoutDialog(BuildContext context) {
     final cartProvider = context.read<CartProvider>();
-    
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -412,21 +419,14 @@ class CartScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 cartProvider.clearCart();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Order placed successfully!'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
+                context.showSuccessSnackbar('Order placed successfully');
+
                 context.push('/dashboard');
               },
               child: Text(

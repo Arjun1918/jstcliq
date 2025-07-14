@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/my_products/provider/my_products_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -23,8 +24,19 @@ class AddProductBottomSheet extends StatefulWidget {
 
 class _AddProductBottomSheetState extends State<AddProductBottomSheet> {
   final _formKey = GlobalKey<FormBuilderState>();
-  String? _selectedImagePath;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    // Clear any previously selected image when opening the bottom sheet
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProductProvider>(
+        context,
+        listen: false,
+      ).clearSelectedImagePath();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +122,8 @@ class _AddProductBottomSheetState extends State<AddProductBottomSheet> {
                             },
                           ),
 
+                          const SizedBox(height: 20),
+
                           const Text(
                             'Add Product',
                             style: TextStyle(
@@ -143,48 +157,58 @@ class _AddProductBottomSheetState extends State<AddProductBottomSheet> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: _pickImage,
-                            child: Container(
-                              width: double.infinity,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade100,
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(8),
-                                        bottomLeft: Radius.circular(8),
-                                      ),
+                          Consumer<ProductProvider>(
+                            builder: (context, productsProvider, child) {
+                              return GestureDetector(
+                                onTap: _pickImage,
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
                                     ),
-                                    child: const Icon(
-                                      Icons.upload_file,
-                                      color: Colors.grey,
-                                    ),
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      _selectedImagePath != null
-                                          ? 'Image selected'
-                                          : 'Choose file',
-                                      style: TextStyle(
-                                        color: _selectedImagePath != null
-                                            ? Colors.green
-                                            : Colors.grey.shade600,
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 50,
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade100,
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(8),
+                                            bottomLeft: Radius.circular(8),
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.upload_file,
+                                          color: Colors.grey,
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          productsProvider.selectedImagePath !=
+                                                  null
+                                              ? 'Image selected'
+                                              : 'Choose file',
+                                          style: TextStyle(
+                                            color:
+                                                productsProvider
+                                                        .selectedImagePath !=
+                                                    null
+                                                ? Colors.green
+                                                : Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
+                                ),
+                              );
+                            },
                           ),
 
                           const SizedBox(height: 20),
@@ -260,30 +284,30 @@ class _AddProductBottomSheetState extends State<AddProductBottomSheet> {
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      setState(() {
-        _selectedImagePath = image.path;
-      });
+      Provider.of<ProductProvider>(
+        context,
+        listen: false,
+      ).setSelectedImagePath(image.path);
     }
   }
 
   void _submitForm() {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final formData = _formKey.currentState!.value;
+      final productProvider = Provider.of<ProductProvider>(
+        context,
+        listen: false,
+      );
 
-      Provider.of<ProductProvider>(context, listen: false).addProduct(
+      productProvider.addProduct(
         formData['product_name'] as String,
         formData['category'] as String,
-        _selectedImagePath ?? '',
+        productProvider.selectedImagePath ?? '',
         double.parse(formData['cost'].toString()),
       );
 
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Product added successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      context.showSuccessSnackbar('product added successfully');
     }
   }
 }

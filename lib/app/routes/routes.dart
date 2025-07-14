@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kods/app/routes/routes_name.dart';
+import 'package:kods/login/view/otp_screen.dart';
 import 'package:kods/menu_drawer/booking/view/my_booking.dart';
 import 'package:kods/menu_drawer/my_products/view/my_products_screen.dart';
 import 'package:kods/menu_drawer/my_services/view/my_services_screen.dart';
@@ -19,6 +20,7 @@ import 'package:kods/services_screens/modules/electrician/view/electrician_servi
 import 'package:kods/login/view/login_screen.dart';
 import 'package:kods/login/view/register_screen.dart';
 import 'package:kods/utils/splash_screen.dart';
+
 class AppRoutes {
   static final GoRouter router = GoRouter(
     initialLocation: RouteNames.splash,
@@ -95,7 +97,14 @@ class AppRoutes {
           return FruitDetailsScreen(fruitName: fruitId);
         },
       ),
-
+      GoRoute(
+        name: RouteNames.otp,
+        builder: (context, state) {
+          final mobileNumber = state.extra as String? ?? '';
+          return OTPScreen(mobileNumber: mobileNumber);
+        },
+        path: RouteNames.otp,
+      ),
       GoRoute(
         path: RouteNames.productexplore,
         name: RouteNames.productexplore,

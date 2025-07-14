@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/login/provider/auth_provider.dart';
 import 'package:kods/utils/theme.dart';
 import 'package:kods/common/widgets/textfield.dart';
@@ -26,7 +27,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   late AnimationController _scaleController;
   late AnimationController _floatingController;
   late AnimationController _staggerController;
-  
+
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
@@ -49,17 +50,17 @@ class _RegisterScreenState extends State<RegisterScreen>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 1400),
       vsync: this,
     );
-    
+
     _scaleController = AnimationController(
       duration: const Duration(milliseconds: 900),
       vsync: this,
     );
-    
+
     _floatingController = AnimationController(
       duration: const Duration(seconds: 4),
       vsync: this,
@@ -69,85 +70,66 @@ class _RegisterScreenState extends State<RegisterScreen>
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
-    
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.elasticOut,
-    ));
-    
-    _scaleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.bounceOut,
-    ));
-    
-    _floatingAnimation = Tween<double>(
-      begin: 0.0,
-      end: 12.0,
-    ).animate(CurvedAnimation(
-      parent: _floatingController,
-      curve: Curves.easeInOut,
-    ));
 
-    _staggerAnimation1 = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _staggerController,
-      curve: const Interval(0.0, 0.25, curve: Curves.easeOut),
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
 
-    _staggerAnimation2 = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _staggerController,
-      curve: const Interval(0.25, 0.5, curve: Curves.easeOut),
-    ));
+    _slideAnimation = Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _slideController, curve: Curves.elasticOut),
+        );
 
-    _staggerAnimation3 = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _staggerController,
-      curve: const Interval(0.5, 0.75, curve: Curves.easeOut),
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.bounceOut),
+    );
 
-    _staggerAnimation4 = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _staggerController,
-      curve: const Interval(0.75, 1.0, curve: Curves.easeOut),
-    ));
-    
+    _floatingAnimation = Tween<double>(begin: 0.0, end: 12.0).animate(
+      CurvedAnimation(parent: _floatingController, curve: Curves.easeInOut),
+    );
+
+    _staggerAnimation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _staggerController,
+        curve: const Interval(0.0, 0.25, curve: Curves.easeOut),
+      ),
+    );
+
+    _staggerAnimation2 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _staggerController,
+        curve: const Interval(0.25, 0.5, curve: Curves.easeOut),
+      ),
+    );
+
+    _staggerAnimation3 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _staggerController,
+        curve: const Interval(0.5, 0.75, curve: Curves.easeOut),
+      ),
+    );
+
+    _staggerAnimation4 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _staggerController,
+        curve: const Interval(0.75, 1.0, curve: Curves.easeOut),
+      ),
+    );
+
     // Mark animations as initialized
     _animationsInitialized = true;
-    
+
     // Start animations with delays
     _startAnimations();
   }
 
   void _startAnimations() {
     _fadeController.forward();
-    
+
     Future.delayed(const Duration(milliseconds: 200), () {
       if (mounted) _scaleController.forward();
     });
-    
+
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) _slideController.forward();
     });
@@ -155,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted) _staggerController.forward();
     });
-    
+
     // Start the floating animation
     _floatingController.repeat(reverse: true);
   }
@@ -178,7 +160,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     if (!_formKey.currentState!.validate()) return;
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    
+
     final success = await authProvider.register(
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
@@ -189,57 +171,23 @@ class _RegisterScreenState extends State<RegisterScreen>
     if (mounted) {
       if (success) {
         context.go('/login');
-        _showSuccessSnackBar();
+        context.showSuccessSnackbar('Registration successful! Please login.');
       } else {
-        _showErrorSnackBar(authProvider.errorMessage);
+        context.showErrorSnackbar(authProvider.errorMessage);
       }
     }
-  }
-
-  void _showSuccessSnackBar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          children: [
-            Icon(Icons.check_circle, color: Colors.white),
-            SizedBox(width: 8),
-            Text('Registration successful! Please login.'),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  }
-
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error, color: Colors.white),
-            const SizedBox(width: 8),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
   }
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter email';
     }
-    
+
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
     if (!emailRegex.hasMatch(value)) {
       return 'Enter a valid email address';
     }
-    
+
     return null;
   }
 
@@ -248,11 +196,11 @@ class _RegisterScreenState extends State<RegisterScreen>
       return 'Please enter mobile number';
     }
     final digitsOnly = value.replaceAll(RegExp(r'\D'), '');
-    
+
     if (digitsOnly.length < 10) {
       return 'Mobile number must be at least 10 digits';
     }
-    
+
     return null;
   }
 
@@ -260,11 +208,11 @@ class _RegisterScreenState extends State<RegisterScreen>
     if (value == null || value.isEmpty) {
       return 'Please enter $fieldName';
     }
-    
+
     if (value.trim().length < 2) {
       return '$fieldName must be at least 2 characters';
     }
-    
+
     return null;
   }
 
@@ -274,9 +222,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     if (!_animationsInitialized) {
       return const Scaffold(
         backgroundColor: AppTheme.backgroundColor,
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -287,10 +233,7 @@ class _RegisterScreenState extends State<RegisterScreen>
       body: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
           return Column(
-            children: [
-              _buildHeader(size),
-              _buildForm(authProvider),
-            ],
+            children: [_buildHeader(size), _buildForm(authProvider)],
           );
         },
       ),
@@ -599,7 +542,9 @@ class _RegisterScreenState extends State<RegisterScreen>
           ],
         ),
         child: ElevatedButton(
-          onPressed: authProvider.status == AuthStatus.loading ? null : _handleSignUp,
+          onPressed: authProvider.status == AuthStatus.loading
+              ? null
+              : _handleSignUp,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryColor,
             shape: RoundedRectangleBorder(
@@ -646,9 +591,7 @@ class _RegisterScreenState extends State<RegisterScreen>
               decoration: BoxDecoration(
                 color: AppTheme.errorColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.errorColor.withOpacity(0.3),
-                ),
+                border: Border.all(color: AppTheme.errorColor.withOpacity(0.3)),
               ),
               child: Row(
                 children: [
@@ -694,7 +637,10 @@ class _RegisterScreenState extends State<RegisterScreen>
             GestureDetector(
               onTap: () => context.go('/login'),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(15),
@@ -727,11 +673,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         child: const Text(
           'By creating an account, you accept our Terms of Use\nand Privacy Policy',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.black54,
-            fontSize: 12,
-            height: 1.4,
-          ),
+          style: TextStyle(color: Colors.black54, fontSize: 12, height: 1.4),
         ),
       ),
     );

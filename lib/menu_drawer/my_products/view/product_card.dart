@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/my_products/model/my_products.dart';
 import 'package:kods/menu_drawer/my_products/provider/my_products_provider.dart';
 import 'package:provider/provider.dart';
@@ -236,15 +237,8 @@ class ProductCard extends StatelessWidget {
                 Provider.of<ProductProvider>(context, listen: false)
                     .removeproduct(product.id);
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Product deleted successfully',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                        context.showErrorSnackbar("Product deleted successfully");
+
               },
               child: Text(
                 'Delete',

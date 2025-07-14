@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/my_services/provider/service_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +24,6 @@ class AddServiceBottomSheet extends StatefulWidget {
 
 class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
   final _formKey = GlobalKey<FormBuilderState>();
-  String? _selectedImagePath;
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -65,7 +65,7 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
                     ],
                   ),
                 ),
-                
+
                 // Form Content
                 Expanded(
                   child: SingleChildScrollView(
@@ -99,18 +99,20 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
                                   ),
                                 ),
                                 items: servicesProvider.categories
-                                    .map((category) => DropdownMenuItem(
-                                          value: category,
-                                          child: Text(category),
-                                        ))
+                                    .map(
+                                      (category) => DropdownMenuItem(
+                                        value: category,
+                                        child: Text(category),
+                                      ),
+                                    )
                                     .toList(),
                                 validator: FormBuilderValidators.required(),
                               );
                             },
                           ),
-                          
+
                           const SizedBox(height: 20),
-                          
+
                           // Add Service Name
                           const Text(
                             'Add Service',
@@ -134,9 +136,9 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
                             ),
                             validator: FormBuilderValidators.required(),
                           ),
-                          
+
                           const SizedBox(height: 20),
-                          
+
                           // Upload Service Image
                           const Text(
                             'Upload Service Image',
@@ -167,28 +169,39 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
                                         bottomLeft: Radius.circular(8),
                                       ),
                                     ),
-                                    child: const Icon(Icons.upload_file, color: Colors.grey),
+                                    child: const Icon(
+                                      Icons.upload_file,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: Text(
-                                      _selectedImagePath != null
-                                          ? 'Image selected'
-                                          : 'Choose file',
-                                      style: TextStyle(
-                                        color: _selectedImagePath != null
-                                            ? Colors.green
-                                            : Colors.grey.shade600,
-                                      ),
+                                    child: Consumer<ServicesProvider>(
+                                      builder: (context, serviceProvider, _) {
+                                        return Text(
+                                          serviceProvider.selectedImagePath !=
+                                                  null
+                                              ? 'Image selected'
+                                              : 'Choose file',
+                                          style: TextStyle(
+                                            color:
+                                                serviceProvider
+                                                        .selectedImagePath !=
+                                                    null
+                                                ? Colors.green
+                                                : Colors.grey.shade600,
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 20),
-                          
+
                           // Cost
                           const Text(
                             'Cost',
@@ -216,9 +229,9 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
                               FormBuilderValidators.numeric(),
                             ]),
                           ),
-                          
+
                           const SizedBox(height: 32),
-                          
+
                           // Add Service Button
                           SizedBox(
                             width: double.infinity,
@@ -227,7 +240,9 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF8BB6E8),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -241,7 +256,7 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
                               ),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 20),
                         ],
                       ),
@@ -259,31 +274,35 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      setState(() {
-        _selectedImagePath = image.path;
-      });
+      Provider.of<ServicesProvider>(
+        context,
+        listen: false,
+      ).setImagePath(image.path);
     }
   }
 
   void _submitForm() {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final formData = _formKey.currentState!.value;
-      
+
+      final imagePath =
+          Provider.of<ServicesProvider>(
+            context,
+            listen: false,
+          ).selectedImagePath ??
+          '';
+
       Provider.of<ServicesProvider>(context, listen: false).addService(
         formData['service_name'] as String,
         formData['category'] as String,
-        _selectedImagePath ?? '',
+        imagePath,
         double.parse(formData['cost'].toString()),
       );
-      
+
+      Provider.of<ServicesProvider>(context, listen: false).clearImagePath();
+
       Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Service added successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      context.showSuccessSnackbar('Service added successfully');
     }
   }
 }
-

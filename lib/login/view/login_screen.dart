@@ -124,19 +124,21 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  void _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      final success = await context.read<AuthProvider>().login(
-        _mobileController.text.trim(),
-        '',
-      );
+void _handleLogin() async {
+  if (_formKey.currentState!.validate()) {
+    final success = await context.read<AuthProvider>().login(
+      _mobileController.text.trim(),
+      '',
+    );
 
-      if (success) {
-        if (mounted) context.go('/dashboard');
+    if (success) {
+      if (mounted) {
+        // Navigate to OTP screen instead of dashboard
+        context.go('/otp', extra: _mobileController.text.trim());
       }
     }
   }
-
+}
   @override
   Widget build(BuildContext context) {
     // Return a loading indicator if animations aren't initialized yet
@@ -158,7 +160,6 @@ class _LoginScreenState extends State<LoginScreen>
           return SafeArea(
             child: Column(
               children: [
-                // Animated Logo Section
                 FadeTransition(
                   opacity: _fadeAnimation,
                   child: AnimatedBuilder(
@@ -172,7 +173,6 @@ class _LoginScreenState extends State<LoginScreen>
                           color: AppTheme.backgroundColor,
                           child: Stack(
                             children: [
-                              // Decorative circles
                               Positioned(
                                 top: -50,
                                 right: -50,

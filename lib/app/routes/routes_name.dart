@@ -4,6 +4,7 @@ class RouteNames {
   static const String dashboard = '/dashboard';
   static const String profile = '/profile';
   static const String home = '/home';
+  static const String otp = '/otp';
   static const String bookingpage = '/bookingpage';
   static const String register = '/register';
   static const String myservices = '/myservices';
