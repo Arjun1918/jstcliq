@@ -17,12 +17,12 @@ class MyBookingsScreen extends StatefulWidget {
 class _MyBookingsScreenState extends State<MyBookingsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<BookingProvider>(context, listen: false).loadBookings();
     });
@@ -36,7 +36,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
 
   void _showCancelDialog(Booking booking) {
     final TextEditingController reasonController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -45,10 +45,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
         ),
         title: Text(
           'Cancel Booking',
-          style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -79,8 +76,10 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              Provider.of<BookingProvider>(context, listen: false)
-                  .cancelBooking(booking.id, reasonController.text);
+              Provider.of<BookingProvider>(
+                context,
+                listen: false,
+              ).cancelBooking(booking.id, reasonController.text);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
@@ -104,54 +103,49 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
-   appBar: AppBar(
-  backgroundColor: Colors.white,
-  elevation: 0,
-  leading: IconButton(
-    icon: Icon(Icons.arrow_back, color: theme.textTheme.bodyLarge?.color),
-    onPressed: () => context.pop(),
-  ),
-  title: Center(
-    child: Text(
-      'My Bookings',
-      style: TextStyle(
-        color: theme.textTheme.bodyLarge?.color,
-        fontSize: 18.sp,
-        fontWeight: FontWeight.w600,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.textTheme.bodyLarge?.color),
+          onPressed: () => context.pop(),
+        ),
+        title: Center(
+          child: Text(
+            'My Bookings',
+            style: TextStyle(
+              color: theme.textTheme.bodyLarge?.color,
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        actions: [
+          Container(
+            margin: EdgeInsets.only(right: 16.w),
+            child: NotificationBell(
+              onTap: () {
+                // Handle notification tap
+              },
+            ),
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: AppTheme.primaryColor,
+          labelColor: AppTheme.primaryColor,
+          unselectedLabelColor: Colors.grey,
+          labelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+          tabs: const [
+            Tab(text: 'Upcoming'),
+            Tab(text: 'Past'),
+          ],
+        ),
       ),
-    ),
-  ),
-  actions: [
-    Container(
-      margin: EdgeInsets.only(right: 16.w),
-      child: NotificationBell(
-        onTap: () {
-          // Handle notification tap
-        },
-      ),
-    ),
-  ],
-  bottom: TabBar(
-    controller: _tabController,
-    indicatorColor: AppTheme.primaryColor,
-    labelColor: AppTheme.primaryColor,
-    unselectedLabelColor: Colors.grey,
-    labelStyle: TextStyle(
-      fontSize: 14.sp,
-      fontWeight: FontWeight.w600,
-    ),
-    tabs: const [
-      Tab(text: 'Upcoming'),
-      Tab(text: 'Past'),
-    ],
-  ),
-),
-  body: Consumer<BookingProvider>(
+      body: Consumer<BookingProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (provider.error != null) {
@@ -159,18 +153,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64.w,
-                    color: Colors.red,
-                  ),
+                  Icon(Icons.error_outline, size: 64.w, color: Colors.red),
                   SizedBox(height: 16.h),
                   Text(
                     provider.error!,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.red,
-                    ),
+                    style: TextStyle(fontSize: 16.sp, color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16.h),
@@ -192,71 +179,112 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           );
         },
       ),
-    );
-  }
-Widget _buildBookingsList(List<Booking> bookings, {required bool isUpcoming}) {
-  if (bookings.isEmpty) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            isUpcoming ? Icons.calendar_today : Icons.history,
-            size: 64.w,
-            color: Colors.grey,
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            isUpcoming ? 'No upcoming bookings' : 'No past bookings',
-            style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            isUpcoming 
-                ? 'Book a service to see it here'
-                : 'Your completed bookings will appear here',
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      bottomNavigationBar: Consumer<BookingProvider>(
+        builder: (context, provider, child) {
+          // Check which tab is active and if corresponding booking list is empty
+          final isUpcomingTab = _tabController.index == 0;
+          final bookingsList = isUpcomingTab
+              ? provider.upcomingBookings
+              : provider.pastBookings;
+
+          if (bookingsList.isEmpty) {
+            return Padding(
+              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+              child: SizedBox(
+                width: double.infinity,
+                height: 48.h,
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.push('/bookservice');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                  child: Text(
+                    'Book Services',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        },
       ),
     );
   }
 
-  return RefreshIndicator(
-    onRefresh: () => Provider.of<BookingProvider>(context, listen: false).loadBookings(),
-    child: ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      itemCount: isUpcoming ? bookings.length + 1 : bookings.length,
-      itemBuilder: (context, index) {
-        if (isUpcoming && index == 0) {
-          // 🟢 Add "Thanks for the booking" at the top
-          return Padding(
-            padding: EdgeInsets.only(bottom: 16.h),
-            child: Text(
-              'Thanks for the booking!',
+  Widget _buildBookingsList(
+    List<Booking> bookings, {
+    required bool isUpcoming,
+  }) {
+    if (bookings.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isUpcoming ? Icons.calendar_today : Icons.history,
+              size: 64.w,
+              color: Colors.grey,
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              isUpcoming ? 'No upcoming bookings' : 'No past bookings',
               style: TextStyle(
                 fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.green,
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
               ),
             ),
-          );
-        }
+            SizedBox(height: 8.h),
+            Text(
+              isUpcoming
+                  ? 'Book a service to see it here'
+                  : 'Your completed bookings will appear here',
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
 
-        final booking = bookings[isUpcoming ? index - 1 : index];
-        return _buildBookingCard(booking, isUpcoming: isUpcoming);
-      },
-    ),
-  );
-}
+    return RefreshIndicator(
+      onRefresh: () =>
+          Provider.of<BookingProvider>(context, listen: false).loadBookings(),
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        itemCount: isUpcoming ? bookings.length + 1 : bookings.length,
+        itemBuilder: (context, index) {
+          if (isUpcoming && index == 0) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: 16.h),
+              child: Text(
+                'Thanks for the booking!',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.green,
+                ),
+              ),
+            );
+          }
+
+          final booking = bookings[isUpcoming ? index - 1 : index];
+          return _buildBookingCard(booking, isUpcoming: isUpcoming);
+        },
+      ),
+    );
+  }
 
   Widget _buildBookingCard(Booking booking, {required bool isUpcoming}) {
     return Container(
@@ -296,10 +324,7 @@ Widget _buildBookingsList(List<Booking> bookings, {required bool isUpcoming}) {
               const Spacer(),
               Text(
                 'Booking #${booking.id}',
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -340,32 +365,18 @@ Widget _buildBookingsList(List<Booking> bookings, {required bool isUpcoming}) {
           SizedBox(height: 12.h),
           Row(
             children: [
-              Icon(
-                Icons.calendar_today,
-                size: 16.w,
-                color: Colors.grey[600],
-              ),
+              Icon(Icons.calendar_today, size: 16.w, color: Colors.grey[600]),
               SizedBox(width: 8.w),
               Text(
                 booking.formattedBookingDate,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
               ),
               SizedBox(width: 16.w),
-              Icon(
-                Icons.access_time,
-                size: 16.w,
-                color: Colors.grey[600],
-              ),
+              Icon(Icons.access_time, size: 16.w, color: Colors.grey[600]),
               SizedBox(width: 8.w),
               Text(
                 booking.formattedBookingTime,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -373,25 +384,19 @@ Widget _buildBookingsList(List<Booking> bookings, {required bool isUpcoming}) {
             SizedBox(height: 12.h),
             Row(
               children: [
-                Icon(
-                  Icons.store,
-                  size: 16.w,
-                  color: Colors.grey[600],
-                ),
+                Icon(Icons.store, size: 16.w, color: Colors.grey[600]),
                 SizedBox(width: 8.w),
                 Expanded(
                   child: Text(
                     '${booking.shop!.name} • ${booking.shop!.location}',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
                   ),
                 ),
               ],
             ),
           ],
-          if (booking.status == BookingStatus.cancelled && booking.cancellationReason != null) ...[
+          if (booking.status == BookingStatus.cancelled &&
+              booking.cancellationReason != null) ...[
             SizedBox(height: 12.h),
             Container(
               padding: EdgeInsets.all(8.w),
@@ -402,19 +407,12 @@ Widget _buildBookingsList(List<Booking> bookings, {required bool isUpcoming}) {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 16.w,
-                    color: Colors.red,
-                  ),
+                  Icon(Icons.info_outline, size: 16.w, color: Colors.red),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
                       'Cancellation reason: ${booking.cancellationReason}',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.red,
-                      ),
+                      style: TextStyle(fontSize: 12.sp, color: Colors.red),
                     ),
                   ),
                 ],
@@ -435,10 +433,7 @@ Widget _buildBookingsList(List<Booking> bookings, {required bool isUpcoming}) {
                 ),
                 child: Text(
                   'Cancel Booking',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.red,
-                  ),
+                  style: TextStyle(fontSize: 14.sp, color: Colors.red),
                 ),
               ),
             ),
