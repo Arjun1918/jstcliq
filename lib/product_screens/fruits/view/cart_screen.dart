@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kods/products/fruits/provider/cart_provider.dart';
+import 'package:kods/product_screens/fruits/provider/cart_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:kods/utils/theme.dart';
 // Import your CartProvider from the file above

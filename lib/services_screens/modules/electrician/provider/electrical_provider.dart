@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kods/menu_drawer/booking/model/booking_model.dart';
 import 'package:kods/menu_drawer/booking/provider/booking_provider.dart';
-import 'package:kods/services/modules/electrician/model/electrician_model.dart';
-import 'package:kods/services/modules/electrician/repo/electrician_repo.dart';
+import 'package:kods/services_screens/modules/electrician/model/electrician_model.dart';
+import 'package:kods/services_screens/modules/electrician/repo/electrician_repo.dart';
 
 class ElectricalProvider extends ChangeNotifier {
   List<ElectricalShop> _shops = [];

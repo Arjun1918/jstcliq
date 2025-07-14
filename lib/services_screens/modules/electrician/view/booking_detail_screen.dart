@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:kods/common/widgets/date_picker.dart';
 import 'package:kods/common/widgets/time_picker.dart';
 import 'package:kods/utils/theme.dart';
-import 'package:kods/services/modules/electrician/model/electrician_model.dart';
-import 'package:kods/services/modules/electrician/provider/electrical_provider.dart';
+import 'package:kods/services_screens/modules/electrician/model/electrician_model.dart';
+import 'package:kods/services_screens/modules/electrician/provider/electrical_provider.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
   final ElectricalService service;

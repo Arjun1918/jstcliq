@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kods/common/widgets/notification_bell.dart';
-import 'package:kods/services/modules/electrician/model/electrician_model.dart';
-import 'package:kods/services/modules/electrician/provider/electrical_provider.dart';
+import 'package:kods/services_screens/modules/electrician/model/electrician_model.dart';
+import 'package:kods/services_screens/modules/electrician/provider/electrical_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:kods/utils/theme.dart';
 

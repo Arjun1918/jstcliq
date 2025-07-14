@@ -1,4 +1,4 @@
-import 'package:kods/services/modules/electrician/model/electrician_model.dart';
+import 'package:kods/services_screens/modules/electrician/model/electrician_model.dart';
 
 class ElectricalDataService {
   static final List<ElectricalShop> _mockData = [
