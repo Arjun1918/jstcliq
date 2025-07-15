@@ -110,7 +110,7 @@ class FruitDetailsScreen extends StatelessWidget {
                       child: Container(
                         padding: EdgeInsets.all(2.w),
                         decoration: BoxDecoration(
-                          color: Colors.red,
+                          color:  AppTheme.errorColor,
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                         constraints: BoxConstraints(

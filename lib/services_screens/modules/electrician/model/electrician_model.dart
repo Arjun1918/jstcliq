@@ -3,6 +3,7 @@ class ElectricalShop {
   final String id;
   final String name;
   final String details;
+  final int phoneNumber;
   final String timings;
   final String location;
   final String distance;
@@ -13,6 +14,7 @@ class ElectricalShop {
     required this.id,
     required this.name,
     required this.details,
+    required this.phoneNumber,
     required this.timings,
     required this.location,
     required this.distance,
@@ -23,6 +25,7 @@ class ElectricalShop {
   factory ElectricalShop.fromJson(Map<String, dynamic> json) {
     return ElectricalShop(
       id: json['id'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? 0,
       name: json['name'] ?? '',
       details: json['details'] ?? '',
       timings: json['timings'] ?? '',
@@ -39,6 +42,7 @@ class ElectricalShop {
     return {
       'id': id,
       'name': name,
+      'phoneNumber': phoneNumber,
       'details': details,
       'timings': timings,
       'location': location,
@@ -52,12 +56,14 @@ class ElectricalShop {
 class ElectricalService {
   final String id;
   final String name;
+  final int phoneNumber;
   final double cost;
   final String description;
   final bool isAvailable;
 
   ElectricalService({
     required this.id,
+    required this.phoneNumber,
     required this.name,
     required this.cost,
     required this.description,
@@ -69,6 +75,7 @@ class ElectricalService {
   factory ElectricalService.fromJson(Map<String, dynamic> json) {
     return ElectricalService(
       id: json['id'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? 0,
       name: json['name'] ?? '',
       cost: (json['cost'] ?? 0).toDouble(),
       description: json['description'] ?? '',
@@ -81,6 +88,7 @@ class ElectricalService {
       'id': id,
       'name': name,
       'cost': cost,
+      'phoneNumber': phoneNumber,
       'description': description,
       'isAvailable': isAvailable,
     };

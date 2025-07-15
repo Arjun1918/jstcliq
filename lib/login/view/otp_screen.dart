@@ -12,8 +12,8 @@ import 'package:provider/provider.dart';
 
 class OTPScreen extends StatefulWidget {
   final String mobileNumber;
-
-  const OTPScreen({super.key, required this.mobileNumber});
+  
+  const OTPScreen({super.key,required this.mobileNumber});
 
   @override
   State<OTPScreen> createState() => _OTPScreenState();
@@ -128,7 +128,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
   void _startTimer() {
     if (!mounted) return;
 
-    // Use post frame callback to ensure this runs after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
@@ -197,7 +196,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final formData = _formKey.currentState?.value;
 
-      // Combine all OTP digits
       String otp = '';
       for (int i = 0; i < 6; i++) {
         otp += formData?['otp_$i'] ?? '';
@@ -257,7 +255,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
               key: _formKey,
               child: Column(
                 children: [
-                  // Animated Logo Section
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: AnimatedBuilder(
@@ -271,7 +268,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                             color: AppTheme.backgroundColor,
                             child: Stack(
                               children: [
-                                // Decorative circles
                                 Positioned(
                                   top: -50,
                                   right: -50,
@@ -304,7 +300,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                                // Logo
                                 Center(
                                   child: ScaleTransition(
                                     scale: _scaleAnimation,
@@ -336,8 +331,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                       },
                     ),
                   ),
-
-                  // Animated Form Section
                   Expanded(
                     child: SlideTransition(
                       position: _slideAnimation,
@@ -365,7 +358,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // Animated Title
                               FadeTransition(
                                 opacity: _fadeAnimation,
                                 child: Column(
@@ -407,8 +399,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                               ),
 
                               const SizedBox(height: 20),
-
-                              // Phone number display
                               FadeTransition(
                                 opacity: _fadeAnimation,
                                 child: Container(
@@ -446,20 +436,12 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
 
                               const SizedBox(height: 35),
 
-                              // OTP Input Fields using FormBuilder
                               ScaleTransition(
                                 scale: _scaleAnimation,
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 5),
-                                      ),
-                                    ],
-                                  ),
+                ),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -509,7 +491,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                                             }
                                           },
                                           onTap: () {
-                                            // Clear the field when tapped for better UX
                                             _formKey
                                                 .currentState
                                                 ?.fields['otp_$index']
@@ -523,8 +504,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                               ),
 
                               const SizedBox(height: 30),
-
-                              // Verify Button
                               FadeTransition(
                                 opacity: _fadeAnimation,
                                 child: ScaleTransition(
@@ -645,12 +624,10 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                               ),
 
                               const SizedBox(height: 25),
-
-                              // Back Button
                               FadeTransition(
                                 opacity: _fadeAnimation,
                                 child: TextButton.icon(
-                                  onPressed: () => context.pop(),
+                                  onPressed: () => context.go('/login'),
                                   icon: const Icon(
                                     Icons.arrow_back_ios,
                                     color: Colors.white70,

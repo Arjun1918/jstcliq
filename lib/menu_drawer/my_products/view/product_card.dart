@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/my_products/model/my_products.dart';
 import 'package:kods/menu_drawer/my_products/provider/my_products_provider.dart';
+import 'package:kods/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class ProductCard extends StatelessWidget {
@@ -198,7 +199,7 @@ class ProductCard extends StatelessWidget {
                 child: Icon(
                   Icons.delete_outline,
                   size: 14.sp,
-                  color: Colors.red.shade600,
+                  color:  AppTheme.errorColor,
                 ),
               ),
             ),
@@ -244,7 +245,7 @@ class ProductCard extends StatelessWidget {
                 'Delete',
                 style: TextStyle(
                   fontSize: 14.sp,
-                  color: Colors.red,
+                  color:  AppTheme.errorColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),

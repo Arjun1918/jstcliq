@@ -4,6 +4,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/my_products/provider/my_products_provider.dart';
+import 'package:kods/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 void showAddProductBottomSheet(BuildContext context) {
@@ -199,7 +200,7 @@ class _AddProductBottomSheetState extends State<AddProductBottomSheet> {
                                                 productsProvider
                                                         .selectedImagePath !=
                                                     null
-                                                ? Colors.green
+                                                ?  AppTheme.sucessColor
                                                 : Colors.grey.shade600,
                                           ),
                                         ),

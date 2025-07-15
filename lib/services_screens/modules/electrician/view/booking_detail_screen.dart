@@ -6,6 +6,7 @@ import 'package:kods/common/provider/time_picker_provider.dart';
 import 'package:kods/common/widgets/date_month_utils.dart';
 import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/booking/provider/booking_provider.dart';
+import 'package:kods/services/notification_services/notification_services.dart';
 import 'package:provider/provider.dart';
 import 'package:kods/common/widgets/date_picker.dart';
 import 'package:kods/common/widgets/time_picker.dart';
@@ -24,37 +25,58 @@ class BookingDetailsScreen extends StatefulWidget {
 }
 
 class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
+  final NotificationService _notificationService = NotificationService();
+  
+  // Create local providers
+  late DatePickerProvider _datePickerProvider;
+  late TimePickerProvider _timePickerProvider;
+
   @override
   void initState() {
     super.initState();
+    
+    // Initialize local providers
+    _datePickerProvider = DatePickerProvider();
+    _timePickerProvider = TimePickerProvider();
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final electricalProvider = Provider.of<ElectricalProvider>(
+          context,
+          listen: false,
+        );
+
+        final bookingProvider = Provider.of<BookingProvider>(
+          context,
+          listen: false,
+        );
+        
+        electricalProvider.setBookingProvider(bookingProvider);
+        electricalProvider.clearBookingState();
+      } catch (e) {
+        debugPrint('Error initializing providers: $e');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _datePickerProvider.dispose();
+    _timePickerProvider.dispose();
+    super.dispose();
+  }
+
+  void _confirmBooking() async {
+    try {
       final electricalProvider = Provider.of<ElectricalProvider>(
         context,
         listen: false,
       );
-
       final bookingProvider = Provider.of<BookingProvider>(
         context,
         listen: false,
       );
-      electricalProvider.setBookingProvider(bookingProvider);
 
-      // Clear booking state
-      electricalProvider.clearBookingState();
-    });
-  }
-
-  void _confirmBooking() async {
-    final electricalProvider = Provider.of<ElectricalProvider>(
-      context,
-      listen: false,
-    );
-    final bookingProvider = Provider.of<BookingProvider>(
-      context,
-      listen: false,
-    );
-
-    try {
       await electricalProvider.confirmBooking(
         service: widget.service,
         shop: widget.shop,
@@ -64,11 +86,35 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
       await bookingProvider.loadBookings();
 
-      _showBookingConfirmationDialog();
-    } catch (e) {
-      if (!mounted) return;
+      // Send notification after successful booking
+      await _sendBookingConfirmationNotification(electricalProvider);
 
-      context.showErrorSnackbar('Booking failed: ${e.toString()}');
+      if (mounted) {
+        _showBookingConfirmationDialog();
+      }
+    } catch (e) {
+      debugPrint('Booking error: $e');
+      if (mounted) {
+        context.showErrorSnackbar('Booking failed: ${e.toString()}');
+      }
+    }
+  }
+
+  Future<void> _sendBookingConfirmationNotification(ElectricalProvider provider) async {
+    try {
+      await _notificationService.showBookingConfirmationNotification(
+        serviceName: widget.service.name,
+        date: provider.selectedDate != null 
+            ? formatDate(provider.selectedDate!) 
+            : 'Not selected',
+        time: provider.selectedTime != null 
+            ? provider.selectedTime!.format(context) 
+            : 'Not selected',
+        cost: widget.service.formattedCost,
+        shopName: widget.shop?.name,
+      );
+    } catch (e) {
+      debugPrint('Failed to send notification: $e');
     }
   }
 
@@ -88,10 +134,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               width: 60.w,
               height: 60.w,
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color:  AppTheme.sucessColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.check_circle, color: Colors.green, size: 40.w),
+              child: Icon(Icons.check_circle, color:  AppTheme.sucessColor, size: 40.w),
             ),
             SizedBox(height: 16.h),
             Text(
@@ -99,7 +145,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.green,
+                color:  AppTheme.sucessColor,
               ),
             ),
           ],
@@ -166,6 +212,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
+                    // Clear booking state after dialog is dismissed
+                    provider.clearBookingState();
                     // Navigate to My Bookings screen
                     context.push('/my-bookings');
                   },
@@ -189,6 +237,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
+                    // Clear booking state after dialog is dismissed
+                    provider.clearBookingState();
                     context.pop();
                   },
                   style: ElevatedButton.styleFrom(
@@ -245,15 +295,17 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                   _buildShopDetailsCard(),
                 ],
                 SizedBox(height: 20.h),
-                ChangeNotifierProvider(
-                  create: (_) => DatePickerProvider(),
+                // Use local provider instead of creating new one
+                ChangeNotifierProvider.value(
+                  value: _datePickerProvider,
                   child: CustomDatePicker(
                     onDateSelected: provider.setSelectedDate,
                   ),
                 ),
                 SizedBox(height: 20.h),
-                ChangeNotifierProvider(
-                  create: (_) => TimePickerProvider(),
+                // Use local provider instead of creating new one
+                ChangeNotifierProvider.value(
+                  value: _timePickerProvider,
                   child: CustomTimePicker(
                     onTimeSelected: provider.setSelectedTime,
                   ),

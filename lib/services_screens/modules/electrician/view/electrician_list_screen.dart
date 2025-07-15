@@ -60,7 +60,7 @@ class _ElectricalListScreenState extends State<ElectricalListScreen> {
                 children: [
                   Text(
                     provider.error!,
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(color:  AppTheme.errorColor),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),

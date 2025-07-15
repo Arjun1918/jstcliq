@@ -38,7 +38,7 @@ class CartScreen extends StatelessWidget {
             builder: (context, cartProvider, child) {
               if (cartProvider.items.isNotEmpty) {
                 return IconButton(
-                  icon: Icon(Icons.delete_outline, color: Colors.red[600]),
+                  icon: Icon(Icons.delete_outline, color: AppTheme.errorColor),
                   onPressed: () {
                     _showClearCartDialog(context);
                   },
@@ -92,7 +92,7 @@ Widget _buildEmptyBottomBar(BuildContext context) {
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: () => context.push('/dashboard'),
+          onPressed: () => context.push('/productexplore'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryColor,
             padding: EdgeInsets.symmetric(vertical: 14.h),
@@ -393,7 +393,7 @@ Widget _buildEmptyCart(BuildContext context) {
                 Navigator.of(context).pop();
                 context.showSuccessSnackbar('Cart cleared successfully');
               },
-              child: Text('Clear', style: TextStyle(color: Colors.red[600])),
+              child: Text('Clear', style: TextStyle(color:  AppTheme.errorColor)),
             ),
           ],
         );

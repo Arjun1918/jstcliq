@@ -92,10 +92,8 @@ class _LoginScreenState extends State<LoginScreen>
       curve: Curves.easeInOut,
     ));
     
-    // Mark animations as initialized
     _animationsInitialized = true;
     
-    // Start animations with delays
     _startAnimations();
   }
 
@@ -130,10 +128,8 @@ void _handleLogin() async {
       _mobileController.text.trim(),
       '',
     );
-
     if (success) {
       if (mounted) {
-        // Navigate to OTP screen instead of dashboard
         context.go('/otp', extra: _mobileController.text.trim());
       }
     }
@@ -141,7 +137,6 @@ void _handleLogin() async {
 }
   @override
   Widget build(BuildContext context) {
-    // Return a loading indicator if animations aren't initialized yet
     if (!_animationsInitialized) {
       return const Scaffold(
         backgroundColor: AppTheme.backgroundColor,
@@ -152,7 +147,6 @@ void _handleLogin() async {
     }
 
     final size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Consumer<AuthProvider>(

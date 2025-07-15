@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/my_services/model/service_model.dart';
 import 'package:kods/menu_drawer/my_services/provider/service_provider.dart';
+import 'package:kods/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class ServiceCard extends StatelessWidget {
@@ -207,7 +208,7 @@ class ServiceCard extends StatelessWidget {
                 child: Icon(
                   Icons.delete_outline,
                   size: 14.sp,
-                  color: Colors.red.shade600,
+                  color:  AppTheme.errorColor,
                 ),
               ),
             ),
@@ -254,7 +255,7 @@ class ServiceCard extends StatelessWidget {
                 'Delete',
                 style: TextStyle(
                   fontSize: 14.sp,
-                  color: Colors.red,
+                  color:  AppTheme.errorColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),

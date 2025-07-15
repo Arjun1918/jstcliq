@@ -10,7 +10,6 @@ class ProductProvider extends ChangeNotifier {
     'Dairy Products',
   ];
   
-  // Add selected image path management
   String? _selectedImagePath;
 
   List<ProductModel> get products => _products;

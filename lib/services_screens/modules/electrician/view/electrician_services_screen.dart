@@ -80,11 +80,11 @@ class _ElectricalServicesScreenState extends State<ElectricalServicesScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline, size: 48.w, color: Colors.red),
+                    Icon(Icons.error_outline, size: 48.w, color:  AppTheme.errorColor),
                     SizedBox(height: 16.h),
                     Text(
                       provider.error!,
-                      style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                      style: TextStyle(color:  AppTheme.errorColor, fontSize: 14.sp),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 16.h),

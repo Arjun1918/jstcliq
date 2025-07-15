@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kods/common/widgets/notification_bell.dart';
@@ -6,6 +7,7 @@ import 'package:kods/menu_drawer/booking/model/booking_model.dart';
 import 'package:kods/menu_drawer/booking/provider/booking_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:kods/utils/theme.dart';
+import 'package:url_launcher/url_launcher.dart'; // Add this import
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -34,8 +36,24 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     super.dispose();
   }
 
+  // Method to handle phone call
+  void _makePhoneCall(String phoneNumber) async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    } else {
+      // Show error message if can't launch
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not launch phone dialer'),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+    }
+  }
+
   void _showCancelDialog(Booking booking) {
-    final TextEditingController reasonController = TextEditingController();
+    final formKey = GlobalKey<FormBuilderState>();
 
     showDialog(
       context: context,
@@ -47,26 +65,29 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           'Cancel Booking',
           style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Are you sure you want to cancel this booking?',
-              style: TextStyle(fontSize: 14.sp),
-            ),
-            SizedBox(height: 16.h),
-            TextField(
-              controller: reasonController,
-              maxLines: 3,
-              decoration: InputDecoration(
-                hintText: 'Reason for cancellation (optional)',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.r),
+        content: FormBuilder(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Are you sure you want to cancel this booking?',
+                style: TextStyle(fontSize: 14.sp),
+              ),
+              SizedBox(height: 16.h),
+              FormBuilderTextField(
+                name: 'reason',
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Reason for cancellation (optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -75,14 +96,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              Provider.of<BookingProvider>(
-                context,
-                listen: false,
-              ).cancelBooking(booking.id, reasonController.text);
+              if (formKey.currentState?.saveAndValidate() ?? false) {
+                final reason =
+                    formKey.currentState?.fields['reason']?.value ?? '';
+                Navigator.of(context).pop();
+                Provider.of<BookingProvider>(
+                  context,
+                  listen: false,
+                ).cancelBooking(booking.id, reason);
+              }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppTheme.errorColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.r),
               ),
@@ -123,11 +148,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
         actions: [
           Container(
             margin: EdgeInsets.only(right: 16.w),
-            child: NotificationBell(
-              onTap: () {
-                // Handle notification tap
-              },
-            ),
+            child: NotificationBell(onTap: () {}),
           ),
         ],
         bottom: TabBar(
@@ -138,7 +159,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           labelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
           tabs: const [
             Tab(text: 'Upcoming'),
-            Tab(text: 'Past'),
+            Tab(text: 'Completed'),
           ],
         ),
       ),
@@ -153,11 +174,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64.w, color: Colors.red),
+                  Icon(Icons.error_outline, size: 64.w, color:  AppTheme.errorColor),
                   SizedBox(height: 16.h),
                   Text(
                     provider.error!,
-                    style: TextStyle(fontSize: 16.sp, color: Colors.red),
+                    style: TextStyle(fontSize: 16.sp, color:  AppTheme.errorColor),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16.h),
@@ -181,7 +202,6 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
       ),
       bottomNavigationBar: Consumer<BookingProvider>(
         builder: (context, provider, child) {
-          // Check which tab is active and if corresponding booking list is empty
           final isUpcomingTab = _tabController.index == 0;
           final bookingsList = isUpcomingTab
               ? provider.upcomingBookings
@@ -273,7 +293,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
-                  color: Colors.green,
+                  color: AppTheme.sucessColor,
                 ),
               ),
             );
@@ -287,6 +307,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   }
 
   Widget _buildBookingCard(Booking booking, {required bool isUpcoming}) {
+    String phoneNumber = (booking.shop?.phoneNumber as String?) ?? '+91 9876543210';
+
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(16.w),
@@ -304,6 +326,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header with status and booking ID
           Row(
             children: [
               Container(
@@ -328,32 +351,91 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
               ),
             ],
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 16.h),
+
+          // Main content with circular avatar
           Row(
             children: [
-              Icon(
-                Icons.electrical_services,
-                color: AppTheme.primaryColor,
-                size: 24.w,
+              // Circular avatar with electric icon
+              Container(
+                width: 60.w,
+                height: 60.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  border: Border.all(
+                    color: AppTheme.primaryColor.withOpacity(0.3),
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/electric.png',
+                    width: 30.w,
+                    height: 30.w,
+                    color: AppTheme.primaryColor,
+                  ),
+                ),
               ),
-              SizedBox(width: 12.w),
+              SizedBox(width: 16.w),
+
+              // Service details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      booking.service.name,
+                      'Provider Name:',
                       style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 12.sp,
+                        color: AppTheme.primaryColor,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 2.h),
+                    Text(
+                      booking.service.name.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color:AppTheme.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+
+                    Text(
+                      'Price:',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
                     Text(
                       booking.service.formattedCost,
                       style: TextStyle(
                         fontSize: 14.sp,
-                        color: AppTheme.primaryColor,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+
+                    Text(
+                      'Date Required',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color:AppTheme.primaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      '${booking.formattedBookingDate}  ${booking.formattedBookingTime}',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: AppTheme.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -362,24 +444,46 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
               ),
             ],
           ),
-          SizedBox(height: 12.h),
-          Row(
-            children: [
-              Icon(Icons.calendar_today, size: 16.w, color: Colors.grey[600]),
-              SizedBox(width: 8.w),
-              Text(
-                booking.formattedBookingDate,
-                style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
+
+          // Phone number section with call functionality
+          SizedBox(height: 16.h),
+          GestureDetector(
+            onTap: () => _makePhoneCall(phoneNumber),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(color: Colors.grey[300]!),
               ),
-              SizedBox(width: 16.w),
-              Icon(Icons.access_time, size: 16.w, color: Colors.grey[600]),
-              SizedBox(width: 8.w),
-              Text(
-                booking.formattedBookingTime,
-                style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.phone,
+                    size: 18.w,
+                    color:AppTheme.secondaryColor,
+                  ),
+                  SizedBox(width: 8.w),
+                  Text(
+                    phoneNumber,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: AppTheme.textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 12.w,
+                    color: Colors.grey[600],
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
+
+          // Shop location (if available)
           if (booking.shop != null) ...[
             SizedBox(height: 12.h),
             Row(
@@ -389,7 +493,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                 Expanded(
                   child: Text(
                     '${booking.shop!.name} • ${booking.shop!.location}',
-                    style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
                   ),
                 ),
               ],
@@ -401,39 +505,45 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
             Container(
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
+                color:  AppTheme.errorColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.info_outline, size: 16.w, color: Colors.red),
+                  Icon(Icons.info_outline, size: 16.w, color:  AppTheme.errorColor),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
                       'Cancellation reason: ${booking.cancellationReason}',
-                      style: TextStyle(fontSize: 12.sp, color: Colors.red),
+                      style: TextStyle(fontSize: 12.sp, color:  AppTheme.errorColor),
                     ),
                   ),
                 ],
               ),
             ),
           ],
+
           if (isUpcoming && booking.canBeCancelled) ...[
-            SizedBox(height: 12.h),
+            SizedBox(height: 16.h),
             SizedBox(
               width: double.infinity,
-              child: OutlinedButton(
+              child: ElevatedButton(
                 onPressed: () => _showCancelDialog(booking),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.red),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.secondaryColor,
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
                 ),
                 child: Text(
-                  'Cancel Booking',
-                  style: TextStyle(fontSize: 14.sp, color: Colors.red),
+                  'Cancel',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),

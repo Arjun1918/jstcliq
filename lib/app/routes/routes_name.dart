@@ -11,6 +11,7 @@ class RouteNames {
   static const String myproducts = '/myproducts';
   static const String forgotPassword = '/forgot-password';
   static const String signUp = '/sign-up';
+  static const String orderstatus = '/order-status';
   static const String bookservice = '/bookservice';
   static const String productexplore = '/productexplore';
   static const String electriclist = '/electriclist';

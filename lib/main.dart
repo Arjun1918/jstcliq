@@ -5,13 +5,20 @@ import 'package:kods/dashboard/provider/dashboard_provider.dart';
 import 'package:kods/menu_drawer/booking/provider/booking_provider.dart';
 import 'package:kods/menu_drawer/my_products/provider/my_products_provider.dart';
 import 'package:kods/menu_drawer/my_services/provider/service_provider.dart';
+import 'package:kods/menu_drawer/order_status/provider/order_status_provider.dart';
 import 'package:kods/product_screens/fruits/provider/cart_provider.dart';
 import 'package:kods/login/provider/auth_provider.dart';
+import 'package:kods/services/notification_services/notification_services.dart';
 import 'package:kods/services_screens/modules/electrician/provider/electrical_provider.dart';
 import 'package:kods/utils/theme.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+
   runApp(const MyApp());
 }
 
@@ -34,6 +41,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => DashboardProvider()),
             ChangeNotifierProvider(create: (_) => BookingProvider()),
             ChangeNotifierProvider(create: (_) => ProductProvider()),
+            ChangeNotifierProvider(create: (_) => OrderStatusProvider()),
           ],
           child: MaterialApp.router(
             title: 'JstCliq',

@@ -6,11 +6,11 @@ class BookingProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isUpdating = false;
   String? _error;
-
   List<Booking> get bookings => _bookings;
-  bool get isLoading => _isLoading;
   bool get isUpdating => _isUpdating;
+  bool get isLoading => _isLoading;
   String? get error => _error;
+
 
   List<Booking> get upcomingBookings => _bookings
       .where(
@@ -29,33 +29,23 @@ class BookingProvider extends ChangeNotifier {
       .toList();
 
   Future<void> loadBookings() async {
-    // Do nothing here if you’re not using mock or API
-    // This prevents resetting or overriding the current list
   }
 
   Future<void> addBooking(Booking booking) async {
-    // Add the new booking to the beginning of the list
     _bookings.insert(0, booking);
 
-    // Sort bookings by creation date (newest first)
     _bookings.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-    // Mark that we have loaded initial data to prevent mock data from overwriting
 
     notifyListeners();
   }
 
   Future<void> refreshBookings() async {
-    // This method can be used to refresh from server without losing current bookings
     _setLoading(true);
     _error = null;
 
-    try {
-      // Simulate API call to refresh bookings from server
-      await Future.delayed(const Duration(seconds: 1));
+    try {      await Future.delayed(const Duration(seconds: 1));
 
-      // In a real app, you would fetch updated bookings from server
-      // For now, we'll just sort the existing bookings
       _bookings.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
       _error = 'Failed to refresh bookings: $e';
@@ -87,7 +77,8 @@ class BookingProvider extends ChangeNotifier {
             cancellationReason: reason,
           );
           _bookings[index] = updatedBooking;
-          notifyListeners();
+          notifyListeners(
+          );
         }
       }
     } catch (e) {
@@ -105,7 +96,6 @@ class BookingProvider extends ChangeNotifier {
     _error = null;
 
     try {
-      // Simulate API call for status update
       await Future.delayed(const Duration(seconds: 1));
 
       final index = _bookings.indexWhere((booking) => booking.id == bookingId);

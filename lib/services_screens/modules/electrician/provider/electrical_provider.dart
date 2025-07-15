@@ -92,50 +92,50 @@ class ElectricalProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-Future<void> confirmBooking({
-  required ElectricalService service,
-  ElectricalShop? shop,
-}) async {
-  if (_selectedDate == null || _selectedTime == null) {
-    _error = 'Please select both date and time';
-    notifyListeners();
-    return;
+  Future<void> confirmBooking({
+    required ElectricalService service,
+    ElectricalShop? shop,
+  }) async {
+    if (_selectedDate == null || _selectedTime == null) {
+      _error = 'Please select both date and time';
+      notifyListeners();
+      return;
+    }
+
+    _setBookingLoading(true);
+    
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+      
+      final bookingId = DateTime.now().millisecondsSinceEpoch.toString();
+      
+      final booking = Booking(
+        id: bookingId,
+        service: service,
+        shop: shop,
+        bookingDate: _selectedDate!,
+        bookingTime: _selectedTime!,
+        createdAt: DateTime.now(),
+        status: BookingStatus.confirmed,
+      );
+      
+      if (_bookingProvider != null) {
+        await _bookingProvider!.addBooking(booking);
+      }
+      
+      // DON'T clear the booking state here - let the UI handle it after showing the dialog
+      // clearBookingState(); // REMOVED THIS LINE
+      
+      notifyListeners();
+      
+    } catch (e) {
+      _error = 'Failed to confirm booking: $e';
+      rethrow;
+    } finally {
+      _setBookingLoading(false);
+    }
   }
 
-  _setBookingLoading(true);
-  
-  try {
-    await Future.delayed(const Duration(seconds: 2));
-    
-    final bookingId = DateTime.now().millisecondsSinceEpoch.toString();
-    
-    final booking = Booking(
-      id: bookingId,
-      service: service,
-      shop: shop,
-      bookingDate: _selectedDate!,
-      bookingTime: _selectedTime!,
-      createdAt: DateTime.now(),
-      status: BookingStatus.confirmed,
-    );
-    
-    if (_bookingProvider != null) {
-      await _bookingProvider!.addBooking(booking);
-    }
-    
-    // Clear the booking state after successful booking
-    clearBookingState();
-    
-    // THIS WAS MISSING - notify listeners about the booking completion
-    notifyListeners();
-    
-  } catch (e) {
-    _error = 'Failed to confirm booking: $e';
-    rethrow;
-  } finally {
-    _setBookingLoading(false);
-  }
-}
   void clearBookingState() {
     _selectedDate = null;
     _selectedTime = null;

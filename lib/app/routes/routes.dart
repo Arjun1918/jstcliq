@@ -5,6 +5,7 @@ import 'package:kods/login/view/otp_screen.dart';
 import 'package:kods/menu_drawer/booking/view/my_booking.dart';
 import 'package:kods/menu_drawer/my_products/view/my_products_screen.dart';
 import 'package:kods/menu_drawer/my_services/view/my_services_screen.dart';
+import 'package:kods/menu_drawer/order_status/view/order_status_screen.dart';
 import 'package:kods/menu_drawer/profile/view/profile_screen.dart';
 import 'package:kods/product_screens/fruits/view/cart_screen.dart';
 import 'package:kods/product_screens/fruits/view/fruit_detail_page.dart';
@@ -112,6 +113,15 @@ class AppRoutes {
           return const ProductExploreScreen();
         },
       ),
+      GoRoute(
+        path: '/order-status/:orderId',
+        name: RouteNames.orderstatus,
+        builder: (BuildContext context, GoRouterState state) {
+          final orderId = state.pathParameters['orderId'] ?? '';
+          return OrderStatusScreen(orderId: orderId);
+        },
+      ),
+
       GoRoute(
         path: RouteNames.electricservice,
         name: RouteNames.electricservice,

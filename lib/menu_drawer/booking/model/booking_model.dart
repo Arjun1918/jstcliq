@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kods/services_screens/modules/electrician/model/electrician_model.dart';
+import 'package:kods/utils/theme.dart';
 
 enum BookingStatus {pending, confirmed, inProgress, completed, cancelled}
 
@@ -7,6 +8,7 @@ class Booking {
   final String id;
   final ElectricalService service;
   final ElectricalShop? shop;
+  final ElectricalService? phoneNumber;
   final DateTime bookingDate;
   final TimeOfDay bookingTime;
   final DateTime createdAt;
@@ -17,6 +19,7 @@ class Booking {
   Booking({
     required this.id,
     required this.service,
+    this.phoneNumber,
     this.shop,
     required this.bookingDate,
     required this.bookingTime,
@@ -62,13 +65,13 @@ class Booking {
       case BookingStatus.pending:
         return Colors.orange;
       case BookingStatus.confirmed:
-        return Colors.green;
+        return AppTheme.sucessColor;
       case BookingStatus.inProgress:
         return Colors.blue;
       case BookingStatus.completed:
         return Colors.teal;
       case BookingStatus.cancelled:
-        return Colors.red;
+        return AppTheme.errorColor;
     }
   }
 

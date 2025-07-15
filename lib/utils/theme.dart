@@ -9,6 +9,7 @@ class AppTheme {
   static const Color errorColor = Color(0xFFFF5252);
   static const Color textPrimary = Color(0xFF2D3748);
   static const Color textSecondary = Color(0xFF718096);
+  static const Color sucessColor =Colors.green;
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,

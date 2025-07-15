@@ -52,8 +52,7 @@ class MenuDrawer extends StatelessWidget {
                 title: 'My products',
                 onTap: () {
                   Navigator.pop(context);
-                  // Add navigation to subscription page
-                  context.push('/myproducts');
+                  context.push('/productexplore');
                   FocusScope.of(context).unfocus();
                 },
               ),
@@ -76,7 +75,7 @@ class MenuDrawer extends StatelessWidget {
                   Navigator.pop(context);
                   context.push('/myservices');
                   FocusScope.of(context).unfocus();
-                },  
+                },
               ),
 
               _buildMenuItem(
@@ -96,13 +95,11 @@ class MenuDrawer extends StatelessWidget {
                 title: 'Order Status',
                 onTap: () {
                   Navigator.pop(context);
-                  // context.push('/order-history');
+                  context.push('/order-status/ORD001');
                   FocusScope.of(context).unfocus();
                 },
               ),
-
               const Spacer(),
-
               Container(
                 margin: const EdgeInsets.all(20),
                 width: double.infinity,
@@ -127,7 +124,6 @@ class MenuDrawer extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 40),
             ],
           ),

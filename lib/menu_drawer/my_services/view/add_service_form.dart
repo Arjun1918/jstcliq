@@ -4,6 +4,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kods/common/widgets/snackbar.dart';
 import 'package:kods/menu_drawer/my_services/provider/service_provider.dart';
+import 'package:kods/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 void showAddServiceBottomSheet(BuildContext context) {
@@ -188,7 +189,7 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
                                                 serviceProvider
                                                         .selectedImagePath !=
                                                     null
-                                                ? Colors.green
+                                                ? AppTheme.sucessColor
                                                 : Colors.grey.shade600,
                                           ),
                                         );
@@ -199,10 +200,7 @@ class _AddServiceBottomSheetState extends State<AddServiceBottomSheet> {
                               ),
                             ),
                           ),
-
                           const SizedBox(height: 20),
-
-                          // Cost
                           const Text(
                             'Cost',
                             style: TextStyle(
